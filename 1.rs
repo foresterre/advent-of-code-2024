@@ -20,8 +20,8 @@ fn main() {
     let sum = left
         .iter()
         .zip(right.iter())
-        .map(|(l, r)| (*l - *r).abs())
-        .sum::<i32>();
+        .map(|(l, r)| l.abs_diff(*r))
+        .sum::<u32>();
 
     println!("part 1: {:?}", sum);
 
