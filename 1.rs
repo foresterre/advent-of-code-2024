@@ -1,9 +1,7 @@
 use std::collections::HashMap;
-use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("./1/input.txt").unwrap();
-    let input = input.trim();
+    let input = include_str!("./1/input.txt").trim();
 
     let (mut left, mut right) = input
         .lines()
