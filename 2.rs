@@ -1,7 +1,5 @@
 #![feature(iter_map_windows)]
 
-use std::os::linux::raw::stat;
-
 fn main() {
     let input = include_str!("2/input.txt").trim();
 
