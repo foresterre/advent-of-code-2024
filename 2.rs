@@ -14,9 +14,9 @@ fn part1() {
             line.split_ascii_whitespace()
                 .map(|element| element.parse::<i32>().unwrap())
                 .tuple_windows()
-                .fold(Safety::default(), |acc, (l, r)| acc.test(l, r))
+                .try_fold(Safety::default(), |acc, (l, r)| acc.test(l, r))
         })
-        .filter(|safety| safety.is_safe())
+        .filter(|safety| safety.is_some())
         .count();
 
     println!("part 1: {safe}");
@@ -36,9 +36,9 @@ fn part2() {
             let check = report
                 .iter()
                 .tuple_windows()
-                .fold(Safety::default(), |acc, (&l, &r)| acc.test(l, r));
+                .try_fold(Safety::default(), |acc, (&l, &r)| acc.test(l, r));
 
-            if check.is_safe() {
+            if check.is_some() {
                 return true;
             }
 
@@ -49,9 +49,9 @@ fn part2() {
                         .enumerate()
                         .filter_map(|(j, e)| if j != i { Some(e) } else { None }) // skip nth
                         .tuple_windows()
-                        .fold(Safety::default(), |acc, (&l, &r)| acc.test(l, r))
+                        .try_fold(Safety::default(), |acc, (&l, &r)| acc.test(l, r))
                 })
-                .any(|s| s.is_safe())
+                .any(|s| s.is_some())
         })
         .filter(|&s| s)
         .count();
@@ -74,13 +74,19 @@ impl Safety {
         (self.increasing || self.decreasing) && self.acceptable_difference
     }
 
-    fn test(&self, l: i32, r: i32) -> Self {
+    fn test(&self, l: i32, r: i32) -> Option<Self> {
         let diff = l.abs_diff(r);
 
-        Safety {
+        let safe = Safety {
             increasing: self.increasing && r > l,
             decreasing: self.decreasing && r < l,
             acceptable_difference: self.acceptable_difference && diff >= 1 && diff <= 3,
+        };
+
+        if safe.is_safe() {
+            Some(safe)
+        } else {
+            None
         }
     }
 }
