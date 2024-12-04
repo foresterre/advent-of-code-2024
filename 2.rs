@@ -1,4 +1,4 @@
-#![feature(iter_map_windows)]
+use itertools::Itertools;
 
 fn main() {
     let input = include_str!("2/input.txt").trim();
@@ -8,7 +8,8 @@ fn main() {
         .map(|line| {
             line.split_ascii_whitespace()
                 .map(|element| element.parse::<i32>().unwrap())
-                .map_windows(|&[l, r]| {
+                .tuple_windows()
+                .map(|(l, r)| {
                     let diff = l.abs_diff(r);
 
                     Safety {
