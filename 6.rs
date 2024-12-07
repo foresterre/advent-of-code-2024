@@ -3,6 +3,7 @@ use itertools::Itertools;
 use std::cmp::PartialEq;
 use std::collections::HashSet;
 use std::iter;
+use std::time::Instant;
 
 fn main() {
     let input = include_str!("6/input.txt");
@@ -26,6 +27,7 @@ fn main() {
     println!("part 1: {}", visited.len());
 
     // probably it's enough to only loop over all visited above and replace these with #
+    let t0 = Instant::now();
     let loops = visited
         .iter()
         .map(|&(y, x)| {
@@ -43,27 +45,36 @@ fn main() {
         })
         .sum::<usize>();
 
-    println!("part 2: {}", loops);
+    println!(
+        "part 2 [visited]: {loops} (took {}ms)",
+        t0.elapsed().as_millis()
+    );
 
     // to measure speed diff:
 
-    // let mut loops = 0_usize;
-    // for y in 0..grid.rows() {
-    //     for x in 0..grid.cols() {
-    //         if y == guard.0 && x == guard.1 {
-    //             continue;
-    //         }
-    //         // println!("--- iteration: {y},{x} ---");
-    //
-    //         let orig = *grid.get(y, x).unwrap();
-    //         *grid.get_mut(y, x).unwrap() = '#'; // override
-    //
-    //         let res = grid.find_loop(guard.0, guard.1);
-    //         *grid.get_mut(y, x).unwrap() = orig;
-    //
-    //         loops += res;
-    //     }
-    // }
+    let t0 = Instant::now();
+    let mut loops = 0_usize;
+    for y in 0..grid.rows() {
+        for x in 0..grid.cols() {
+            if y == guard.0 && x == guard.1 {
+                continue;
+            }
+            // println!("--- iteration: {y},{x} ---");
+
+            let orig = *grid.get(y, x).unwrap();
+            *grid.get_mut(y, x).unwrap() = '#'; // override
+
+            let res = grid.find_loop(guard.0, guard.1);
+            *grid.get_mut(y, x).unwrap() = orig;
+
+            loops += res;
+        }
+    }
+
+    println!(
+        "part 2 [full grid]: {loops} (took {}ms)",
+        t0.elapsed().as_millis()
+    );
 }
 
 trait Patrol {
