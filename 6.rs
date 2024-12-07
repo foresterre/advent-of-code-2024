@@ -130,39 +130,6 @@ impl Patrol for Grid<char> {
 
                     let next_pos = peek(*y, *x, *heading);
 
-                    // .scan stops if we return a None, so in visited,
-                    // we stop if we go out of bounds. Here however,
-                    // we want to stop if we detect a loop.
-                    //
-                    // For that we'll need to store the visited coordinates (incl. direction)
-                    // or else we'll keep on walking.
-                    // Scan doesn't make obvious sense anymore, because we need the opposite of
-                    // stopping with a None value, because we have two stopping conditions:
-                    // - out of bounds
-                    // - loop detected
-                    //
-                    // Only for the second, we should exit.
-                    // We can still use .scan if we want, but always return Some(),
-                    // e.g. returning Some(Some(1)) and Some(Some(0)) and Some(None),
-                    // then we need to manually stop by combining .scan with a
-                    // .take_while combinator.
-                    //
-                    // Alternatively, we can map, and return the state in the map.
-                    //
-                    // I don't think fold works with the current setup, because
-                    // fold needs to stop, but since we return a function repeatedly,
-                    // it would need something in place to make it stop earlier, like
-                    // a take_while, but that logic is not available from the scan,
-                    // although,... we could, but that would require state before here.
-                    // None of these options are pretty if I want
-                    // to keep the current iterator setup, without outside mutability...
-                    //
-                    // We'll return None like before, if we go out of bounds, and a value
-                    // of 1 if we detected a loop. Otherwise we should keep on walking,
-                    // and return 0, so scan continues. To stop early on a loop,
-                    // we'll combine the scan with a take_while combinator.
-                    //
-                    // The sum of all 1's will be the loops detected in total.
                     let coord = (*y, *x, *heading);
                     if state.visited.contains(&coord) {
                         return Some(Status::Loop); // Detected loop
@@ -180,7 +147,6 @@ impl Patrol for Grid<char> {
                         state.visited.insert(coord);
                         Some(Status::Continue) // Not a loop
                     } else {
-                        // println!("oob");
                         Some(Status::OutOfBounds)
                     }
                 },
